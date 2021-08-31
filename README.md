@@ -58,9 +58,28 @@ profile要通过`spring.profiles.active` 配置。
     <groupId>com.alibaba.cloud</groupId>
     <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
 </dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-configuration-processor</artifactId>
+    <optional>true</optional>
+</dependency>
 ```
 * bootstrap.yml配置
-
+```yaml
+spring:
+  application:
+    name: author
+  cloud:
+    nacos:
+      #默认是8848端口，注册中心和配置中心的地址默认都是这个地址
+      server-addr: localhost:8848
+      config:
+        file-extension: yaml
+  profiles:
+    active: dev
+server:
+  port: 8080
+```
 * 在Nacos配置author name:
 ![nacos中author项目配置](https://raw.githubusercontent.com/xpp1109/images/main/uPic/PLJsFz.png)
 * 启动项目访问：http://localhost:8080/getAuthorName
@@ -75,6 +94,32 @@ profile要通过`spring.profiles.active` 配置。
 修改author-dev.yaml配置，然后刷新：(注意要先启动项目，再修改配置文件内容)
 ![修改配置刷新后请求结果](https://raw.githubusercontent.com/xpp1109/images/main/uPic/H7BoNO.png)
 可见，不用重启项目，但是配置已经修改生效。
-2. 使用配置类
+2. 使用配置类（AuthorConfiguration.java）
+```java
+package com.xpp.author;
+
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@ConfigurationProperties(prefix = "spring.author")
+@Component
+@Data
+public class AuthorConfiguration {
+    private String name;
+}
+```
+![controller注入并获取配置](https://raw.githubusercontent.com/xpp1109/images/main/uPic/l7pDFB.png)
+启动服务，访问，修改配置再访问：
+修改前：
+![修改前](https://raw.githubusercontent.com/xpp1109/images/main/uPic/7wGLur.png)
+![修改后](https://raw.githubusercontent.com/xpp1109/images/main/uPic/FKdzQg.png)
+* 自定义Namespace,groups, dataId.
+```properties
+spring.cloud.nacos.config.namespace=
+spring.cloud.nacos.config.group=
+spring.cloud.nacos.config.extension-configs=
+```
+此处就不一一演示了。
 
 

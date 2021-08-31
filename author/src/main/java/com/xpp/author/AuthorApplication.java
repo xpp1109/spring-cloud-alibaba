@@ -1,5 +1,6 @@
 package com.xpp.author;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,8 +19,11 @@ public class AuthorApplication {
     @Value("${spring.author.name}")
     private String authorName;
 
+    @Autowired
+    private AuthorConfiguration authorConfiguration;
+
     @GetMapping("/getAuthorName")
     public String getAuthorName() {
-        return this.authorName;
+        return this.authorName + "\n" + "通过AuthorConfiguration读取结果:" + authorConfiguration.getName();
     }
 }
