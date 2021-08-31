@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: author
+  cloud:
+    nacos:
+      #默认是8848端口，注册中心和配置中心的地址默认都是这个地址
+      server-addr: localhost:8848
+server:
+  port: 8080
