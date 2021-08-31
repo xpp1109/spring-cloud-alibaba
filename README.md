@@ -156,6 +156,14 @@ Sentinel以“流量”为切入点，在流量控制、断路、负载保护等
 ![使用@SentinelResource注解](https://raw.githubusercontent.com/xpp1109/images/main/uPic/epZPaj.png)
 * 在nacos配置中增加sentinel配置
 ![Nacos中的Sentinel配置, book](https://raw.githubusercontent.com/xpp1109/images/main/uPic/oZKeoU.png)
-* 重启应用
+* 重启应用,请求getAuthorName接口。刷新sentinel。
+![sentinel面板](https://raw.githubusercontent.com/xpp1109/images/main/uPic/fLszEN.png)
+* 通过面板设置流控
+![流控设置](https://raw.githubusercontent.com/xpp1109/images/main/uPic/WH77Fl.png)
+![设置](https://raw.githubusercontent.com/xpp1109/images/main/uPic/VXasej.png)
+![设置完](https://raw.githubusercontent.com/xpp1109/images/main/uPic/g6PwfF.png)
+打开浏览器，快速刷新访问http://localhost:8080/getAuthorName.
+![偶尔会出现流控界面](https://raw.githubusercontent.com/xpp1109/images/main/uPic/vPsuKE.png)
+* **重启sentinel后数据会丢失，之后会介绍持久化方案**
 
 
