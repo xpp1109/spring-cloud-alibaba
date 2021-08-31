@@ -2,6 +2,7 @@
 * Spring Boot: 2.3.7.RELEASE
 * Spring Cloud Alibaba: 2.2.2.RELEASE
 * JDK: 1.8
+* sentinel dashboard: 1.8.2
 # Nacos服务注册于发现中心、配置中心
 Spring Cloud的注册中心和配置中心是分开的，Spring Cloud Alibaba使用
 Nacos提供者两种功能。
@@ -121,5 +122,40 @@ spring.cloud.nacos.config.group=
 spring.cloud.nacos.config.extension-configs=
 ```
 此处就不一一演示了。
+
+# Sentinel哨兵
+Sentinel以“流量”为切入点，在流量控制、断路、负载保护等多个领域开展工作，保障服务可靠性。
+* 场景丰富： Sentinel 支持阿里巴巴双十一的关键场景10多年，如秒杀（即控制突发流量，使其在系统容量可接受范围内），消息负载转移，不可靠下游应用的断路。
+
+* 全面的实时监控： Sentinel 提供实时监控能力。您可以秒级精确查看服务器的监控数据，甚至可以看到少于500个节点的集群的整体运行状态。
+
+* 广泛的开源生态系统： Sentinel 提供了开箱即用的模块，可以轻松地与其他开源框架/库集成，例如 Spring Cloud、Dubbo 和 gRPC。使用Sentinel只需要引入相关的依赖，做一些简单的配置即可。
+
+* SPI 扩展： Sentinel 提供了简单易用且完善的 SPI 扩展接口。您可以使用 SPI 扩展快速自定义逻辑，例如，您可以定义自己的规则管理，或适应特定的数据源。
+
+[官方地址](https://github.com/alibaba/Sentinel/)
+[Sentinel 面板安装文档](https://github.com/alibaba/Sentinel/wiki/%E6%8E%A7%E5%88%B6%E5%8F%B0)
+
+单机版启动sentinel
+`java -Dserver.port=9000 -Dcsp.sentinel.dashboard.server=localhost:9000 -Dproject.name=sentinel-dashboard -jar sentinel-dashboard.jar`
+启动完成访问http://localhost:9000
+![sentinel 面板登录页](https://raw.githubusercontent.com/xpp1109/images/main/uPic/4L6TRW.png)
+输入用户名sentinel，密码sentinel:
+![sentinel面板主页](https://raw.githubusercontent.com/xpp1109/images/main/uPic/aqPhAi.png)
+
+## spring cloud alibaba sentinel
+* Maven增加sentinel依赖
+```xml
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+</dependency>
+```
+* 使用@SentinelResource注解
+注解含义以及参数请查看https://github.com/alibaba/Sentinel/wiki/%E6%B3%A8%E8%A7%A3%E6%94%AF%E6%8C%81
+![使用@SentinelResource注解](https://raw.githubusercontent.com/xpp1109/images/main/uPic/epZPaj.png)
+* 在nacos配置中增加sentinel配置
+![Nacos中的Sentinel配置, book](https://raw.githubusercontent.com/xpp1109/images/main/uPic/oZKeoU.png)
+* 重启应用
 
 

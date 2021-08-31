@@ -1,5 +1,7 @@
 package com.xpp.author;
 
+import com.alibaba.csp.sentinel.EntryType;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
