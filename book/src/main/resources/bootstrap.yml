@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: book
+  cloud:
+    nacos:
+      #默认是8848端口，注册中心和配置中心的地址默认都是这个地址
+      server-addr: localhost:8848
+      config:
+        file-extension: yaml
+  profiles:
+    active: dev
+server:
+  port: 8081
+feign:
+#  hystrix:
+#    enabled: true
+  sentinel:
+    enabled: true
+management:
+   endpoints:
+     web:
+       exposure:
+         include: '*'

@@ -25,7 +25,14 @@ public class AuthorApplication {
     private AuthorConfiguration authorConfiguration;
 
     @GetMapping("/getAuthorName")
-    public String getAuthorName() {
+    @SentinelResource(value = "getAuthorName", fallback = "getAuthorNameFallback") // 没有配置
+    public String getAuthorName(int authorId) {
+        if (authorId <= 0) {
+            throw new RuntimeException("作者ID有误");
+        }
         return this.authorName + "\n" + "通过AuthorConfiguration读取结果:" + authorConfiguration.getName();
+    }
+    public String getAuthorNameFallback(int authorId, Throwable throwable) {
+        return "fallback";
     }
 }

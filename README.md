@@ -83,7 +83,7 @@ server:
 ```
 * 在Nacos配置author name:
 ![nacos中author项目配置](https://raw.githubusercontent.com/xpp1109/images/main/uPic/PLJsFz.png)
-* 启动项目访问：http://localhost:8080/getAuthorName
+* 启动项目访问：http://localhost:8080/getAuthorName?id=1
 ![从配置中心获取配置结果](https://raw.githubusercontent.com/xpp1109/images/main/uPic/ZXEJX8.png)
 * 增加带有profile的配置，重启项目（怎么做到不重启呢？），重新访问：http://localhost:8080/getAuthorName
 ![增加带有profile的配置](https://raw.githubusercontent.com/xpp1109/images/main/uPic/MZLavf.png)
@@ -153,7 +153,11 @@ Sentinel以“流量”为切入点，在流量控制、断路、负载保护等
 ```
 * 使用@SentinelResource注解
 注解含义以及参数请查看https://github.com/alibaba/Sentinel/wiki/%E6%B3%A8%E8%A7%A3%E6%94%AF%E6%8C%81
-![使用@SentinelResource注解](https://raw.githubusercontent.com/xpp1109/images/main/uPic/epZPaj.png)
+![使用@SentinelResource注解](https://raw.githubusercontent.com/xpp1109/images/main/uPic/4kI3ir.png)
+正常情况：
+![正常情况](https://raw.githubusercontent.com/xpp1109/images/main/uPic/YmuGiF.png)
+异常情况：
+![异常情况](https://raw.githubusercontent.com/xpp1109/images/main/uPic/JCUQfm.png)
 * 在nacos配置中增加sentinel配置
 ![Nacos中的Sentinel配置, book](https://raw.githubusercontent.com/xpp1109/images/main/uPic/oZKeoU.png)
 * 重启应用,请求getAuthorName接口。刷新sentinel。
@@ -162,8 +166,96 @@ Sentinel以“流量”为切入点，在流量控制、断路、负载保护等
 ![流控设置](https://raw.githubusercontent.com/xpp1109/images/main/uPic/WH77Fl.png)
 ![设置](https://raw.githubusercontent.com/xpp1109/images/main/uPic/VXasej.png)
 ![设置完](https://raw.githubusercontent.com/xpp1109/images/main/uPic/g6PwfF.png)
-打开浏览器，快速刷新访问http://localhost:8080/getAuthorName.
+打开浏览器，快速刷新访问http://localhost:8080/getAuthorName?authorId=1
 ![偶尔会出现流控界面](https://raw.githubusercontent.com/xpp1109/images/main/uPic/vPsuKE.png)
 * **重启sentinel后数据会丢失，之后会介绍持久化方案**
+---
+## OpenFeign的支持
+Spring Cloud Alibaba支持使用OpenFeign客户端进行服务调用。
+接下来使用OpenFeign，用Book服务调用Author服务。
+根据上面的步骤将Book服务完善。
+此处省略n个字...................
+---
+### Book服务配置
+* Maven依赖增加OpenFeign
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+</dependency>
+```
+* 增加feign注解支持
+`@EnableFeignClients`
+* 增加Feign接口定义(AuthorFeignClient)
+```java
+package com.xpp.book;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@FeignClient(name = "author", fallback = AuthorFeignClientFallback.class, configuration = FeignConfiguration.class)
+public interface AuthorFeignClient {
+    @GetMapping("getAuthorName")
+    String getAuthorName();
+}
+class FeignConfiguration {
+    @Bean
+    public AuthorFeignClientFallback echoServiceFallback() {
+        return new AuthorFeignClientFallback();
+    }
+}
+
+class AuthorFeignClientFallback implements AuthorFeignClient {
+
+    @Override
+    public String getAuthorName() {
+        return "author服务出现问题或者请求超时。走熔断逻辑";
+    }
+}
+```
+* 增加controller用于使用feign调用author服务
+![BookController](https://raw.githubusercontent.com/xpp1109/images/main/uPic/hmWNdB.png)
+* 启动book项目访问，http:127.0.0.1:8081/getBookAuthorName
+![Feign调用结果](https://raw.githubusercontent.com/xpp1109/images/main/uPic/RucmhY.png)
+可以看到已经请求到了结果。
+* 熔断
+增加配置启用熔断(默认关闭)
+```yaml
+feign:
+  hystrix:
+    enabled: true
+```
+停止author服务，再次请求。
+![熔断访问结果](https://raw.githubusercontent.com/xpp1109/images/main/uPic/ijmg8Q.png)
+* Feign使用Sentinel做熔断
+```yaml
+spring:
+    sentinel:
+      enabled: true
+```
+* RestTemplate支持
+```java
+@SentinelRestTemplate(blockHandler = "handleException", blockHandlerClass = ExceptionUtil.class)
+```
+* 动态数据源支持
+此处不作演示，请查看官网(https://spring-cloud-alibaba-group.github.io/github-pages/hoxton/en-us/index.html#_dynamic_data_source_support)
+* 网关gateway、zuul支持
+主要引入两个依赖
+```xml
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-alibaba-sentinel-gateway</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+</dependency>
+```
+[官网](https://spring-cloud-alibaba-group.github.io/github-pages/hoxton/en-us/index.html#_support_zuul)
+### Dubbo支持
+暂不做。
+> 后续待完善。。。。。。
+
 
 
